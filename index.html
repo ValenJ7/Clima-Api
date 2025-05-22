@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Clima actual</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Consulta el clima</h1>
+    <input type="text" id="ciudad" placeholder="Ej: Buenos Aires" />
+    <button onclick="buscarClima()">Buscar</button>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    const API_KEY = "f3e745c223f2021cb06bdfb792f7835c";
+
+    function buscarClima() {
+      const ciudad = document.getElementById("ciudad").value.trim();
+      const resultado = document.getElementById("resultado");
+
+      if (!ciudad) {
+        resultado.innerHTML = "<p>Por favor ingresa una ciudad.</p>";
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(ciudad)}&appid=${API_KEY}&units=metric&lang=es`;
+
+      fetch(url)
+        .then(res => {
+          if (!res.ok) throw new Error("Ciudad no encontrada o clave incorrecta");
+          return res.json();
+        })
+        .then(data => {
+          resultado.innerHTML = `
+            <h2>${data.name}, ${data.sys.country}</h2>
+            <p><strong>Temperatura:</strong> ${data.main.temp}°C</p>
+            <p><strong>Clima:</strong> ${data.weather[0].description}</p>
+            <p><strong>Humedad:</strong> ${data.main.humidity}%</p>
+          `;
+        })
+        .catch(err => {
+          resultado.innerHTML = `<p style="color: red;">${err.message}</p>`;
+        });
+    }
+  </script>
+</body>
+</html>
+
